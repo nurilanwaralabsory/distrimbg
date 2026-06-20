@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog"
 import { ScanLine, Loader2 } from "lucide-react"
 
-// Kita menerima Server Action sebagai props untuk dijalankan saat sukses
 export function QrScanner({
   pesananIdTarget,
   pengirimanId,
@@ -27,47 +26,57 @@ export function QrScanner({
   const [isProcessing, setIsProcessing] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
 
+  // 1. BUAT ID UNIK untuk setiap scanner menggunakan ID Pengiriman
+  const scannerId = `reader-${pengirimanId}`
+
   useEffect(() => {
-    // Hanya inisialisasi scanner jika dialog terbuka
     if (!isOpen) return
 
-    // Konfigurasi scanner
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      false
-    )
+    let scanner: Html5QrcodeScanner | null = null
 
-    // Fungsi jika berhasil memindai QR Code
-    const onScanSuccess = (decodedText: string) => {
-      // Hentikan scanner segera agar tidak scan berkali-kali
-      scanner.clear()
-      setIsProcessing(true)
+    // 2. BERI JEDA WAKTU (100ms) agar Dialog selesai merender animasi & DOM-nya
+    const timer = setTimeout(() => {
+      // Cek apakah elemennya benar-benar sudah ada di layar
+      const element = document.getElementById(scannerId)
+      if (!element) return
 
-      // Validasi: Apakah QR Code yang di-scan milik dapur yang benar?
-      if (decodedText === pesananIdTarget) {
-        // Buat objek FormData virtual untuk memanggil Server Action
-        const formData = new FormData()
-        formData.append("id", pengirimanId)
-        formData.append("status_pengiriman", "diambil")
+      // Inisialisasi scanner dengan ID yang unik
+      scanner = new Html5QrcodeScanner(
+        scannerId,
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        false
+      )
 
-        onScanSuccessAction(formData) // Jalankan aksi update ke database
-        setIsOpen(false) // Tutup modal
-      } else {
-        setErrorMsg("QR Code tidak cocok dengan pesanan ini!")
-        setIsProcessing(false)
+      const onScanSuccess = (decodedText: string) => {
+        scanner?.clear()
+        setIsProcessing(true)
+
+        if (decodedText === pesananIdTarget) {
+          const formData = new FormData()
+          formData.append("id", pengirimanId)
+          formData.append("status_pengiriman", "diambil")
+
+          onScanSuccessAction(formData)
+          setIsOpen(false)
+        } else {
+          setErrorMsg("QR Code tidak cocok dengan pesanan ini!")
+          setIsProcessing(false)
+        }
+      }
+
+      scanner.render(onScanSuccess, (err) => {
+        /* Abaikan error frame kosong */
+      })
+    }, 100) // Delay 100 milidetik
+
+    // Bersihkan memori dan timer saat modal ditutup
+    return () => {
+      clearTimeout(timer)
+      if (scanner) {
+        scanner.clear().catch((e) => console.error(e))
       }
     }
-
-    scanner.render(onScanSuccess, (err) => {
-      /* Abaikan error scan frame kosong */
-    })
-
-    // Bersihkan memori saat modal ditutup
-    return () => {
-      scanner.clear().catch((e) => console.error(e))
-    }
-  }, [isOpen, pesananIdTarget, pengirimanId, onScanSuccessAction])
+  }, [isOpen, pesananIdTarget, pengirimanId, onScanSuccessAction, scannerId])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -92,7 +101,7 @@ export function QrScanner({
             </div>
           ) : (
             <div
-              id="reader"
+              id={scannerId} // 3. GUNAKAN ID UNIK DI SINI
               className="w-full max-w-[300px] overflow-hidden rounded-lg border-2 border-dashed border-gray-300"
             ></div>
           )}

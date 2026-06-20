@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache"
 export async function updateStatusPengiriman(formData: FormData) {
   const supabase = await createClient()
 
-  // 1. Proteksi Keamanan (Hanya Kurir atau Admin)
+  // Proteksi Keamanan
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -17,6 +17,7 @@ export async function updateStatusPengiriman(formData: FormData) {
     .select("role")
     .eq("id", user.id)
     .single()
+
   if (profile?.role !== "kurir" && profile?.role !== "admin") {
     throw new Error("Akses ditolak")
   }
@@ -24,7 +25,7 @@ export async function updateStatusPengiriman(formData: FormData) {
   const id = formData.get("id") as string
   const status_pengiriman = formData.get("status_pengiriman") as string
 
-  // 2. Siapkan objek data untuk diupdate
+  // Siapkan objek data untuk diupdate
   const updateData: any = { status_pengiriman }
 
   // Catat timestamps otomatis sesuai titik perpindahan logistik
@@ -35,7 +36,7 @@ export async function updateStatusPengiriman(formData: FormData) {
     updateData.waktu_terkirim = waktuSekarang
   }
 
-  // 3. Eksekusi update ke tabel pengiriman
+  // Eksekusi update ke tabel pengiriman
   const { error } = await supabase
     .from("pengiriman")
     .update(updateData)
