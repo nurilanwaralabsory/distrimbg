@@ -44,11 +44,16 @@ export default async function PengajuanKuotaPage(props: {
     redirect("/dashboard")
 
   // Ambil Riwayat Pengajuan Sekolah Ini
-  const { data: riwayat } = await supabase
+  const { data: riwayat, error: errorRiwayat } = await supabase
     .from("kuota_harian")
     .select("*")
     .eq("sekolah_id", user.id)
     .order("tanggal", { ascending: false })
+
+  // JIKA ADA ERROR, TAMPILKAN DI TERMINAL VS CODE
+  if (errorRiwayat) {
+    console.log("🚨 ERROR AMBIL RIWAYAT:", errorRiwayat)
+  }
 
   const today = new Date().toISOString().split("T")[0]
 

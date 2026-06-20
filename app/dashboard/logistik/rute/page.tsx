@@ -27,10 +27,13 @@ import {
   ArrowRight,
 } from "lucide-react"
 
+// 1. IMPORT KOMPONEN QR SCANNER KITA
+import { QrScanner } from "@/components/qr-scanner"
+
 export default async function RuteKurirPage() {
   const supabase = await createClient()
 
-  // 1. Proteksi Halaman
+  // Proteksi Halaman
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -48,7 +51,7 @@ export default async function RuteKurirPage() {
     redirect("/dashboard")
   }
 
-  // 2. Ambil data pengiriman khusus kurir yang sedang login (Multi-level Join)
+  // Ambil data pengiriman (Tambahkan 'id' di dalam pesanan agar QR bisa mencocokkan target)
   const { data: tugasPengiriman, error } = await supabase
     .from("pengiriman")
     .select(
@@ -58,6 +61,7 @@ export default async function RuteKurirPage() {
       waktu_diambil,
       waktu_terkirim,
       pesanan:pesanan_id (
+        id, 
         status_masak,
         dapur:profiles!pesanan_dapur_id_fkey(nama),
         kuota_harian (
@@ -143,71 +147,70 @@ export default async function RuteKurirPage() {
 
                   {/* Tombol Interaktif Kurir */}
                   <TableCell className="text-right">
-                    <form
-                      action={updateStatusPengiriman}
-                      className="flex justify-end"
-                    >
-                      <input type="hidden" name="id" value={tugas.id} />
-
+                    <div className="flex justify-end">
+                      {/* 2. PANGGIL KOMPONEN SCANNER JIKA STATUS MENUJU DAPUR */}
                       {tugas.status_pengiriman === "menuju_dapur" && (
-                        <>
-                          <input
-                            type="hidden"
-                            name="status_pengiriman"
-                            value="diambil"
-                          />
-                          <Button
-                            type="submit"
-                            size="sm"
-                            className="bg-amber-600 hover:bg-amber-700"
-                          >
-                            Konfirmasi Sampai Dapur & Ambil Makanan
-                          </Button>
-                        </>
+                        <QrScanner
+                          pesananIdTarget={detailPesanan.id}
+                          pengirimanId={tugas.id}
+                          onScanSuccessAction={updateStatusPengiriman}
+                        />
                       )}
 
-                      {tugas.status_pengiriman === "diambil" && (
-                        <>
-                          <input
-                            type="hidden"
-                            name="status_pengiriman"
-                            value="dalam_perjalanan"
-                          />
-                          <Button
-                            type="submit"
-                            size="sm"
-                            className="bg-blue-600 hover:bg-blue-700"
-                          >
-                            <Navigation className="mr-2 size-4" /> Mulai
-                            Berkendara
-                          </Button>
-                        </>
-                      )}
+                      {/* Jika status selain menuju_dapur, gunakan form biasa untuk update */}
+                      {(tugas.status_pengiriman === "diambil" ||
+                        tugas.status_pengiriman === "dalam_perjalanan" ||
+                        tugas.status_pengiriman === "terkirim") && (
+                        <form
+                          action={updateStatusPengiriman}
+                          className="flex justify-end"
+                        >
+                          <input type="hidden" name="id" value={tugas.id} />
 
-                      {tugas.status_pengiriman === "dalam_perjalanan" && (
-                        <>
-                          <input
-                            type="hidden"
-                            name="status_pengiriman"
-                            value="terkirim"
-                          />
-                          <Button
-                            type="submit"
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            <CheckCircle className="mr-2 size-4" /> Konfirmasi
-                            Tiba di Sekolah
-                          </Button>
-                        </>
-                      )}
+                          {tugas.status_pengiriman === "diambil" && (
+                            <>
+                              <input
+                                type="hidden"
+                                name="status_pengiriman"
+                                value="dalam_perjalanan"
+                              />
+                              <Button
+                                type="submit"
+                                size="sm"
+                                className="bg-blue-600 hover:bg-blue-700"
+                              >
+                                <Navigation className="mr-2 size-4" /> Mulai
+                                Berkendara
+                              </Button>
+                            </>
+                          )}
 
-                      {tugas.status_pengiriman === "terkirim" && (
-                        <span className="flex items-center justify-end gap-1 text-sm font-semibold text-green-600 italic">
-                          <CheckCircle className="size-4" /> Selesai Diantar
-                        </span>
+                          {tugas.status_pengiriman === "dalam_perjalanan" && (
+                            <>
+                              <input
+                                type="hidden"
+                                name="status_pengiriman"
+                                value="terkirim"
+                              />
+                              <Button
+                                type="submit"
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                <CheckCircle className="mr-2 size-4" />{" "}
+                                Konfirmasi Tiba di Sekolah
+                              </Button>
+                            </>
+                          )}
+
+                          {tugas.status_pengiriman === "terkirim" && (
+                            <span className="flex items-center justify-end gap-1 text-sm font-semibold text-green-600 italic">
+                              <CheckCircle className="size-4" /> Selesai Diantar
+                            </span>
+                          )}
+                        </form>
                       )}
-                    </form>
+                    </div>
                   </TableCell>
                 </TableRow>
               )

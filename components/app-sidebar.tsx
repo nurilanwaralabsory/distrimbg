@@ -1,10 +1,13 @@
 "use client"
 
 import * as React from "react"
+// 1. IMPORT USEPATHNAME UNTUK DETEKSI HALAMAN AKTIF
+import { usePathname } from "next/navigation"
+
 import {
   BadgeCheck,
   Bell,
-  ChevronsUpDown,
+  ChevronDown, // <--- 2. GANTI ICON JADI PANAH TUNGGAL
   CreditCard,
   LogOut,
   Sparkles,
@@ -49,7 +52,6 @@ import {
 
 import { logout } from "@/app/auth/actions"
 
-// 1. TENTUKAN TIPE DATA PROPS UNTUK USER
 interface UserProfile {
   name: string
   email: string
@@ -60,20 +62,18 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: UserProfile
 }
 
-// 2. DATA MENU DINAMIS DENGAN ARRAY 'roles'
 const navMain = [
   {
     title: "Dashboard Utama",
     url: "/dashboard",
     icon: LayoutDashboard,
-    isActive: true,
-    roles: ["admin", "sekolah", "dapur", "kurir"], // Semua bisa lihat
+    roles: ["admin", "sekolah", "dapur", "kurir"],
   },
   {
     title: "Manajemen Kemitraan",
     url: "/dashboard/kemitraan",
     icon: Users,
-    roles: ["admin"], // Hanya admin
+    roles: ["admin"],
   },
   {
     title: "Kuota & Distribusi",
@@ -147,7 +147,7 @@ const navMain = [
     items: [
       {
         title: "Pusat Keluhan",
-        url: "/dashboard/keluhan/pusat",
+        url: "/dashboard/keluhan/masuk",
         roles: ["admin"],
       },
       {
@@ -159,13 +159,13 @@ const navMain = [
   },
 ]
 
-// 3. TERIMA PROPS 'user' DI KOMPONEN
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
-  // LOGIKA FILTER: Saring menu parent dan sub-menu berdasarkan role
+  // 3. INISIALISASI PENDETEKSI RUTE
+  const pathname = usePathname()
+
   const filteredNav = navMain
     .filter((item) => item.roles.includes(user.role))
     .map((item) => {
-      // Jika punya sub-menu, filter juga sub-menunya
       if (item.items) {
         return {
           ...item,
@@ -185,7 +185,6 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-white">
-                {/* Logo DistriMBG */}
                 <Package className="size-5" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -203,13 +202,18 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         <SidebarGroup>
           <SidebarGroupLabel>Menu Utama</SidebarGroupLabel>
           <SidebarMenu>
-            {/* RENDER MENU YANG SUDAH DIFILTER */}
-            {filteredNav.map((item) =>
-              item.items ? (
+            {filteredNav.map((item) => {
+              // 4. CEK APAKAH PARENT ATAU SUB-MENU SEDANG AKTIF
+              const isParentActive = item.items?.some(
+                (sub) => pathname === sub.url
+              )
+              const isSingleActive = pathname === item.url
+
+              return item.items ? (
                 <Collapsible
                   key={item.title}
                   asChild
-                  defaultOpen={item.isActive}
+                  defaultOpen={isParentActive} // Otomatis buka jika sub-menu di dalamnya aktif
                   className="group/collapsible"
                 >
                   <SidebarMenuItem>
@@ -217,28 +221,46 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                       <SidebarMenuButton tooltip={item.title}>
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
-                        <ChevronsUpDown className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+                        {/* ICON DIUBAH MENJADI CHEVRONDOWN */}
+                        <ChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton asChild>
-                              <a href={subItem.url}>
-                                <span>{subItem.title}</span>
-                              </a>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
+                        {item.items.map((subItem) => {
+                          const isSubActive = pathname === subItem.url
+                          return (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={isSubActive}
+                                // Tulis langsung seperti ini, shadcn akan otomatis menyalakannya saat isActive bernilai true
+                                className="hover:bg-primary/90 hover:text-white data-[active=true]:bg-primary! data-[active=true]:font-medium data-[active=true]:text-white"
+                              >
+                                <a href={subItem.url}>
+                                  <span>{subItem.title}</span>
+                                </a>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          )
+                        })}
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </SidebarMenuItem>
                 </Collapsible>
               ) : (
-                // Render menu tunggal (tanpa dropdown) seperti Dashboard/Kemitraan
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={item.title}
+                    isActive={isSingleActive}
+                    // TAMBAHAN CLASS WARNA BG-PRIMARY SAAT AKTIF
+                    className={
+                      isSingleActive
+                        ? "hover:bg-primary/90 hover:text-white data-[active=true]:bg-primary! data-[active=true]:font-medium data-[active=true]:text-white"
+                        : ""
+                    }
+                  >
                     <a href={item.url}>
                       {item.icon && <item.icon />}
                       <span>{item.title}</span>
@@ -246,7 +268,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )
-            )}
+            })}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
@@ -271,7 +293,8 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                       {user.role}
                     </span>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
+                  {/* ICON PROFILE JUGA DIUBAH */}
+                  <ChevronDown className="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -300,7 +323,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                   <form action={logout} className="w-full cursor-pointer">
                     <button
                       type="submit"
-                      className="flex w-full items-center text-red-600"
+                      className="flex w-full items-center font-medium text-red-600"
                     >
                       <LogOut className="mr-2 size-4" />
                       Keluar

@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ChefHat, Package, CheckSquare, Clock } from "lucide-react"
+import { QrGenerator } from "@/components/qr-generator" // <--- Import sudah benar
 
 export default async function PesananDapurPage() {
   const supabase = await createClient()
@@ -28,6 +29,7 @@ export default async function PesananDapurPage() {
     .select("role")
     .eq("id", user.id)
     .single()
+
   if (
     currentUserProfile?.role !== "dapur" &&
     currentUserProfile?.role !== "admin"
@@ -50,7 +52,7 @@ export default async function PesananDapurPage() {
       )
     `
     )
-    .eq("dapur_id", user.id) // Hanya tampilkan pesanan dapur ini
+    .eq("dapur_id", user.id)
     .order("created_at", { ascending: false })
 
   if (error) {
@@ -84,7 +86,6 @@ export default async function PesananDapurPage() {
           </TableHeader>
           <TableBody>
             {daftarPesanan?.map((item: any) => {
-              // Ekstrak data dari hasil nested join agar lebih mudah dibaca
               const tanggal = item.kuota_harian?.tanggal
               const jumlahPorsi = item.kuota_harian?.jumlah_porsi
               const namaSekolah =
@@ -104,7 +105,6 @@ export default async function PesananDapurPage() {
                     {jumlahPorsi} Porsi
                   </TableCell>
                   <TableCell>
-                    {/* Visualisasi Badge Status */}
                     <Badge
                       variant="outline"
                       className="flex w-fit items-center gap-1 bg-gray-50 font-medium capitalize"
@@ -124,8 +124,7 @@ export default async function PesananDapurPage() {
                       {item.status_masak.replace("_", " ")}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    {/* Logika Tombol 1-Click Berdasarkan Status */}
+                  <TableCell className="flex justify-end text-right">
                     <form
                       action={updateStatusMasak}
                       className="flex justify-end"
@@ -182,13 +181,14 @@ export default async function PesananDapurPage() {
                           </Button>
                         </>
                       )}
-
-                      {item.status_masak === "siap_kirim" && (
-                        <span className="text-sm font-semibold text-green-600 italic">
-                          Menunggu Diambil Kurir
-                        </span>
-                      )}
                     </form>
+
+                    {/* KOMPONEN QR CODE DIPANGGIL DI SINI */}
+                    {item.status_masak === "siap_kirim" && (
+                      <div className="ml-2">
+                        <QrGenerator pesananId={item.id} />
+                      </div>
+                    )}
                   </TableCell>
                 </TableRow>
               )
