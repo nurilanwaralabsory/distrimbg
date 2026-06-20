@@ -72,9 +72,8 @@ export default async function PesananDapurPage() {
         </p>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border">
         <Table>
-          <TableCaption>Daftar pesanan aktif untuk hari ini.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Tgl. Distribusi</TableHead>
@@ -107,19 +106,19 @@ export default async function PesananDapurPage() {
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className="flex w-fit items-center gap-1 bg-gray-50 font-medium capitalize"
+                      className="flex w-fit items-center gap-1 font-medium capitalize"
                     >
                       {item.status_masak === "menunggu" && (
-                        <Clock className="size-3 text-gray-500" />
+                        <Clock className="size-3 text-white" />
                       )}
                       {item.status_masak === "dimasak" && (
-                        <ChefHat className="size-3 text-orange-500" />
+                        <ChefHat className="size-3 text-white" />
                       )}
                       {item.status_masak === "dikemas" && (
-                        <Package className="size-3 text-blue-500" />
+                        <Package className="size-3 text-white" />
                       )}
                       {item.status_masak === "siap_kirim" && (
-                        <CheckSquare className="size-3 text-green-500" />
+                        <CheckSquare className="size-3 text-white" />
                       )}
                       {item.status_masak.replace("_", " ")}
                     </Badge>
@@ -141,7 +140,7 @@ export default async function PesananDapurPage() {
                           <Button
                             type="submit"
                             size="sm"
-                            className="bg-orange-500 hover:bg-orange-600"
+                            className="bg-primary text-white hover:bg-primary/90"
                           >
                             <ChefHat className="mr-2 size-4" /> Mulai Masak
                           </Button>
@@ -158,7 +157,7 @@ export default async function PesananDapurPage() {
                           <Button
                             type="submit"
                             size="sm"
-                            className="bg-blue-600 hover:bg-blue-700"
+                            className="bg-primary text-white hover:bg-primary/90"
                           >
                             <Package className="mr-2 size-4" /> Selesai & Kemas
                           </Button>
@@ -175,7 +174,7 @@ export default async function PesananDapurPage() {
                           <Button
                             type="submit"
                             size="sm"
-                            className="bg-green-600 hover:bg-green-700"
+                            className="bg-primary text-white hover:bg-primary/90"
                           >
                             <CheckSquare className="mr-2 size-4" /> Siap Dikirim
                           </Button>
@@ -198,7 +197,7 @@ export default async function PesananDapurPage() {
               <TableRow>
                 <TableCell
                   colSpan={5}
-                  className="py-10 text-center text-gray-500"
+                  className="py-10 text-center text-primary"
                 >
                   Belum ada pesanan yang ditugaskan ke dapur Anda.
                 </TableCell>

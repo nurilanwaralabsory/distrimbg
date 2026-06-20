@@ -66,7 +66,6 @@ export function KemitraanTable({ profiles }: { profiles: Profile[] }) {
       {/* BAGIAN TABEL UTAMA */}
       <div className="rounded-md border">
         <Table>
-          <TableCaption>Daftar mitra terdaftar hingga saat ini.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12.5">No</TableHead>

@@ -53,16 +53,15 @@ export default async function ApprovalKuotaPage() {
         </p>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border">
         <Table>
-          <TableCaption>Daftar seluruh pengajuan kuota harian.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Tanggal</TableHead>
               <TableHead>Nama Sekolah</TableHead>
               <TableHead>Jumlah</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="min-w-[300px] text-right">
+              <TableHead className="min-w-75 text-right">
                 Aksi Persetujuan
               </TableHead>
             </TableRow>
@@ -131,7 +130,7 @@ export default async function ApprovalKuotaPage() {
                         <select
                           name="dapur_id"
                           required
-                          className="max-w-[150px] rounded-md border bg-gray-50 px-2 py-1.5 text-sm"
+                          className="max-w-37.5 rounded-md border bg-black px-2 py-1.5 text-sm text-white"
                         >
                           <option value="">-- Pilih Dapur --</option>
                           {daftarDapur?.map((dapur) => (
@@ -143,7 +142,7 @@ export default async function ApprovalKuotaPage() {
                         <Button
                           type="submit"
                           size="sm"
-                          className="bg-blue-600 hover:bg-blue-700"
+                          className="bg-primary text-white hover:bg-primary/90"
                         >
                           Setujui & Tugaskan
                         </Button>
@@ -162,7 +161,7 @@ export default async function ApprovalKuotaPage() {
               <TableRow>
                 <TableCell
                   colSpan={5}
-                  className="py-10 text-center text-gray-500"
+                  className="py-10 text-center text-primary"
                 >
                   Belum ada pengajuan kuota masuk.
                 </TableCell>

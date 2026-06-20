@@ -68,9 +68,8 @@ export default async function TrackingArmadaPage() {
         </p>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border">
         <Table>
-          <TableCaption>Pantauan langsung operasional harian.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Dapur Produksi</TableHead>

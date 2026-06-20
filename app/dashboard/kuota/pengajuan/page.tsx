@@ -129,7 +129,7 @@ export default async function PengajuanKuotaPage(props: {
         </Card>
 
         {/* INFO RINGKASAN */}
-        <Card className="border-blue-100 bg-blue-50 text-blue-900">
+        <Card className="border-blue-100 text-primary">
           <CardHeader>
             <CardTitle className="text-lg">Informasi Penting</CardTitle>
           </CardHeader>

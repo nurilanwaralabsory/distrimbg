@@ -48,12 +48,12 @@ export default async function DashboardPage() {
             Anda login sebagai: {profile.role}
           </p>
         </div>
-        <Card className="border-blue-100 bg-blue-50">
+        <Card className="border-blue-100">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-800">
+            <CardTitle className="flex items-center gap-2 text-white">
               <Activity className="size-5" /> Siap Bertugas
             </CardTitle>
-            <CardDescription className="text-blue-600">
+            <CardDescription className="text-muted-foreground">
               Silakan gunakan menu di sebelah kiri untuk mulai mengelola
               aktivitas operasional Anda hari ini.
             </CardDescription>
@@ -227,7 +227,7 @@ export default async function DashboardPage() {
             <CardTitle>Status Sistem</CardTitle>
             <CardDescription>Log aktivitas cepat.</CardDescription>
           </CardHeader>
-          <CardContent className="m-6 flex h-[300px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-100 bg-gray-50/50 text-center">
+          <CardContent className="m-6 flex h-75 flex-col items-center justify-center rounded-xl border-2 border-dashed border-white text-center">
             <Activity className="mb-4 size-10 text-gray-300" />
             <p className="text-sm font-medium text-gray-500">
               Semua sistem logistik berjalan normal.

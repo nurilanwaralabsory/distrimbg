@@ -93,9 +93,8 @@ export default async function RuteKurirPage() {
         </p>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border">
         <Table>
-          <TableCaption>Manajemen manifest logistik kurir harian.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Alur Distribusi (Titik A ➔ B)</TableHead>

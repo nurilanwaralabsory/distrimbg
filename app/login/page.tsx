@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import Link from "next/link"
+import { SubmitButton } from "@/components/submit-button"
 
 export default async function LoginPage(props: {
   searchParams: Promise<{ message?: string }>
@@ -19,7 +20,7 @@ export default async function LoginPage(props: {
   const searchParams = await props.searchParams
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Login DistriMBG</CardTitle>
@@ -51,15 +52,16 @@ export default async function LoginPage(props: {
               </p>
             )}
 
-            <Button type="submit" className="mt-4 w-full">
-              Masuk
-            </Button>
+            <SubmitButton
+              text="Masuk ke Akun"
+              loadingText="Mencocokkan Data..."
+            />
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">
             Belum menjadi mitra?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline">
+            <Link href="/register" className="text-primary hover:underline">
               Daftar di sini
             </Link>
           </p>

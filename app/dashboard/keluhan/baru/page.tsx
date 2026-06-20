@@ -34,6 +34,7 @@ import {
   CheckCircle2,
   MessageSquareWarning,
 } from "lucide-react"
+import { SubmitButton } from "@/components/submit-button"
 
 export default async function BuatKeluhanPage(props: {
   searchParams: Promise<{ message?: string }>
@@ -98,8 +99,8 @@ export default async function BuatKeluhanPage(props: {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* FORM INPUT KELUHAN */}
         <Card className="h-fit border-red-100 shadow-sm lg:col-span-1">
-          <CardHeader className="border-b border-red-100 bg-red-50/50 pb-4">
-            <CardTitle className="flex items-center gap-2 text-red-700">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-white">
               <MessageSquareWarning className="size-5" /> Buat Laporan Baru
             </CardTitle>
             <CardDescription>Formulir komplain operasional.</CardDescription>
@@ -160,12 +161,7 @@ export default async function BuatKeluhanPage(props: {
                 </Alert>
               )}
 
-              <Button
-                type="submit"
-                className="w-full bg-red-600 hover:bg-red-700"
-              >
-                Kirim Laporan
-              </Button>
+              <SubmitButton text="Kirim Laporan" loadingText="Mengirim..." />
             </form>
           </CardContent>
         </Card>
