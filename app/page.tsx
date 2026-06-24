@@ -266,7 +266,7 @@ export default function DistriMBGLandingPage() {
                   src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000"
                 />
                 {/* Floating UI Element Mockup */}
-                <div className="glass-panel absolute right-6 bottom-6 left-6 flex items-center justify-between rounded-xl p-4">
+                <div className="absolute right-6 bottom-6 left-6 flex items-center justify-between rounded-xl bg-white/70 p-4">
                   <div className="flex items-center gap-4">
                     <div className="icon-gradient flex h-12 w-12 items-center justify-center rounded-full border border-[#006e28]/20 text-[#006e28]">
                       <span className="material-symbols-outlined fill text-[24px]">
