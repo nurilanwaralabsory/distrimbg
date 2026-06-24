@@ -60,7 +60,9 @@ export function QrScanner({
           formData.append("id", pengirimanId)
           formData.append("status_pengiriman", "diambil")
 
-          // TUNGGU RESPONS DARI SERVER ACTION
+          // TAMBAHKAN BARIS INI BOS: Kirim pesanan_id ke server
+          formData.append("pesanan_id", pesananIdTarget)
+
           const result = await onScanSuccessAction(formData)
 
           if (result?.error) {

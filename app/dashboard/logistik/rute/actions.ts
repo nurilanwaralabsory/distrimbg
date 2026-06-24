@@ -47,7 +47,24 @@ export async function updateStatusPengiriman(formData: FormData) {
     return { error: `Gagal database: ${error.message}` }
   }
 
+  const pesanan_id = formData.get("pesanan_id") as string
+
+  if (status_pengiriman === "diambil" && pesanan_id) {
+    const { error: errorPesanan } = await supabase
+      .from("pesanan")
+      .update({ status_masak: "diambil_kurir" }) // <-- Status ini akan menghilangkan QR di dapur
+      .eq("id", pesanan_id)
+
+    if (errorPesanan) {
+      console.error("Gagal update tabel pesanan:", errorPesanan.message)
+      return {
+        error: `Data pengiriman sukses, tapi gagal update pesanan: ${errorPesanan.message}`,
+      }
+    }
+  }
+
   // JIKA SUKSES
   revalidatePath("/dashboard/logistik/rute")
+  revalidatePath("/dashboard/produksi/pesanan")
   return { success: true }
 }
