@@ -20,7 +20,10 @@ export function QrScanner({
 }: {
   pesananIdTarget: string
   pengirimanId: string
-  onScanSuccessAction: (formData: FormData) => void
+  // 1. UBAH BARIS INI: Beri tahu TypeScript bahwa fungsi ini me-return Promise
+  onScanSuccessAction: (
+    formData: FormData
+  ) => Promise<{ error?: string; success?: boolean } | undefined>
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -47,7 +50,8 @@ export function QrScanner({
         false
       )
 
-      const onScanSuccess = (decodedText: string) => {
+      const onScanSuccess = async (decodedText: string) => {
+        // <-- Tambahkan async di sini
         scanner?.clear()
         setIsProcessing(true)
 
@@ -56,8 +60,17 @@ export function QrScanner({
           formData.append("id", pengirimanId)
           formData.append("status_pengiriman", "diambil")
 
-          onScanSuccessAction(formData)
-          setIsOpen(false)
+          // TUNGGU RESPONS DARI SERVER ACTION
+          const result = await onScanSuccessAction(formData)
+
+          if (result?.error) {
+            // Jika ditolak oleh Supabase, tampilkan error di layar HP Kurir
+            setErrorMsg(result.error)
+            setIsProcessing(false)
+          } else {
+            // Jika benar-benar sukses, baru tutup modalnya
+            setIsOpen(false)
+          }
         } else {
           setErrorMsg("QR Code tidak cocok dengan pesanan ini!")
           setIsProcessing(false)
