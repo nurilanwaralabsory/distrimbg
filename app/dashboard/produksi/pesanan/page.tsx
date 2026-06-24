@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ChefHat, Package, CheckSquare, Clock } from "lucide-react"
 import { QrGenerator } from "@/components/qr-generator" // <--- Import sudah benar
+import { AutoRefreshDapur } from "@/components/auto-refresh"
 
 export default async function PesananDapurPage() {
   const supabase = await createClient()
@@ -63,6 +64,7 @@ export default async function PesananDapurPage() {
 
   return (
     <div className="space-y-6">
+      <AutoRefreshDapur />
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
           Daftar Tugas Produksi
