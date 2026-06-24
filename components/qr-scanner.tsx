@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Html5QrcodeScanner } from "html5-qrcode"
+import { useRouter } from "next/navigation" // <-- 1. IMPORT ROUTER DI SINI
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,7 +21,6 @@ export function QrScanner({
 }: {
   pesananIdTarget: string
   pengirimanId: string
-  // 1. UBAH BARIS INI: Beri tahu TypeScript bahwa fungsi ini me-return Promise
   onScanSuccessAction: (
     formData: FormData
   ) => Promise<{ error?: string; success?: boolean } | undefined>
@@ -28,6 +28,8 @@ export function QrScanner({
   const [isOpen, setIsOpen] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
+
+  const router = useRouter() // <-- 2. INISIALISASI ROUTER DI SINI
 
   // 1. BUAT ID UNIK untuk setiap scanner menggunakan ID Pengiriman
   const scannerId = `reader-${pengirimanId}`
@@ -51,7 +53,6 @@ export function QrScanner({
       )
 
       const onScanSuccess = async (decodedText: string) => {
-        // <-- Tambahkan async di sini
         scanner?.clear()
         setIsProcessing(true)
 
@@ -59,8 +60,6 @@ export function QrScanner({
           const formData = new FormData()
           formData.append("id", pengirimanId)
           formData.append("status_pengiriman", "diambil")
-
-          // TAMBAHKAN BARIS INI BOS: Kirim pesanan_id ke server
           formData.append("pesanan_id", pesananIdTarget)
 
           const result = await onScanSuccessAction(formData)
@@ -70,8 +69,9 @@ export function QrScanner({
             setErrorMsg(result.error)
             setIsProcessing(false)
           } else {
-            // Jika benar-benar sukses, baru tutup modalnya
+            // Jika benar-benar sukses, tutup modal dan REFRESH UI
             setIsOpen(false)
+            router.refresh() // <-- 3. PAKSA UI UPDATE TANPA F5 DI SINI
           }
         } else {
           setErrorMsg("QR Code tidak cocok dengan pesanan ini!")
@@ -91,7 +91,14 @@ export function QrScanner({
         scanner.clear().catch((e) => console.error(e))
       }
     }
-  }, [isOpen, pesananIdTarget, pengirimanId, onScanSuccessAction, scannerId])
+  }, [
+    isOpen,
+    pesananIdTarget,
+    pengirimanId,
+    onScanSuccessAction,
+    scannerId,
+    router,
+  ])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -116,7 +123,7 @@ export function QrScanner({
             </div>
           ) : (
             <div
-              id={scannerId} // 3. GUNAKAN ID UNIK DI SINI
+              id={scannerId}
               className="w-full max-w-[300px] overflow-hidden rounded-lg border-2 border-dashed border-gray-300"
             ></div>
           )}
