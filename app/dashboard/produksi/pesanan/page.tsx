@@ -102,7 +102,7 @@ export default async function PesananDapurPage() {
                       : "-"}
                   </TableCell>
                   <TableCell>{namaSekolah}</TableCell>
-                  <TableCell className="font-bold text-orange-600">
+                  <TableCell className="text-white">
                     {jumlahPorsi} Porsi
                   </TableCell>
                   <TableCell>
@@ -121,6 +121,9 @@ export default async function PesananDapurPage() {
                       )}
                       {item.status_masak === "siap_kirim" && (
                         <CheckSquare className="size-3 text-white" />
+                      )}
+                      {item.status_masak === "diambil_kurir" && (
+                        <CheckSquare className="size-3 text-green-400" />
                       )}
                       {item.status_masak.replace("_", " ")}
                     </Badge>
